@@ -7,8 +7,8 @@
 //=====================================================================================
 #include <Arduino.h>
 #include "pinout.h"
-#include "utils.h"
-#include "thermocouple.h"
+// #include "utils.h"
+#include <thermocouple.h>   // my own thermocouple lib, see lib_extr_dirs in platformio.ini
 
 // thermocouple tc( thermocouple::MAX81355, pinTempClock,pinTempCS0,pinTempData );
 thermocouple tc(thermocouple::MAX6675, pinTempClock,pinTempCS0,pinTempData);
