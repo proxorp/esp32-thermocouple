@@ -33,19 +33,25 @@
 #define	D5	5	                          //[ D5 ] ,GPIO5,VSPI CS,	
 #define	TX2	17	                          //[ TX2 ] ,GPIO17,TX2,	
 #define	D17	17	                          //[ TX2 ] ,GPIO17,TX2,	
+#define	D16	16	                          //[ RX2 ] ,GPIO16,RX2,	
 #define	RX2	16	                          //[ RX2 ] ,GPIO16,RX2,	
 #define	D4	4	                          //[ D4 ] ,GPIO4,ADC10,TOUCH0	
 #define	D2	2	                          //[ D2 ] ,GPIO2,ADC12,TOUCH2	
 #define	D15	15	                          //[ D15 ] ,GPIO15,ADC13,TOUCH3	
 #define	BOOT	0		     //Boot Button / TOUCH1 / etc…
 
-#define LCD_PIN_RS                 D19    // Reg Select - LCDRS
-#define LCD_PIN_DATA               D5    // Data      - LCDE
-#define LCD_PIN_CLK                D18    // Clock     - LCD4
+#define LCD_PIN_RS                 D26   //D19    // Reg Select - LCDRS
+#define LCD_PIN_DATA               D13  // D5    // Data      - LCDE
+#define LCD_PIN_CLK                D14    // Clock     - LCD4
+
+// These defines match the Smart LCD Schematic pin names (legacy)
+#define LCD_PINS_D4     LCD_PIN_CLK
+#define LCD_PINS_ENABLE LCD_PIN_DATA
+#define LCD_PINS_RS     LCD_PIN_RS
 
 #define pinTempClock   D4    //Which level shifter pin is the signal attached
 #define pinTempData    D15
-#define pinTempCS0     D2
+#define pinTempCS0     D12
 #define pinTempCS1     D16
 
 #define LEDPIN LED_BUILTIN
@@ -53,8 +59,8 @@
 // rotary encoder pins
 #define encA        D35 //VP  //D4
 #define encB        D34 //VN  //RX2
-#define encBtn      VP  //D15
-#define KILL_PIN    VN    // kill button pin
+#define encBtn      VN  //D15
+#define KILL_PIN    VP    // kill button pin
 #define BEEPER_PIN                    D17   // Ramps uses this pin for speaker control
 
 
