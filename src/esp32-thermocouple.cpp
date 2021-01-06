@@ -38,6 +38,9 @@ thermocouple tc1( thermocouple::MAX81355, pinTempClock,pinTempCS1,pinTempData );
 
 void setup(void) {
 
+  // Enable sensing of the kill pin as a pause button.
+  pinMode(KILL_PIN, INPUT_PULLUP);       //
+
 //   pinMode(pinTempClock, INPUT_PULLUP);       //
 //   pinMode(pinTempCS0, INPUT_PULLUP);   
 //   pinMode(pinTempCS1, INPUT_PULLUP);   
@@ -67,37 +70,40 @@ void setup(void) {
 }
 
 
+int loopcount=0;
+
 void loop(void) {
+  bool  pause = false;
   char buffer[50];
   int tc_status0, tc_status1;
+
   int16_t tempC0, tempF0, intC0;
   int16_t tempC1, tempF1, intC1;
+
+  loopcount%=10;
+
+  lcd.clearBuffer();  
+  if( !digitalRead(KILL_PIN)&1 ) {
+    pause = true;
+    lcd.setCursor(90,lcd.getMaxCharHeight()); lcd.printf("READY");  lcd.sendBuffer();  
+    while(!digitalRead(KILL_PIN)&1 );  //wait for release    
+    lcd.setCursor(90,lcd.getMaxCharHeight()); lcd.printf("AQUIRE");  lcd.sendBuffer();  
+  }
+
   tc_status0=tc0.read();
   tc_status1=tc1.read();  
 
   tempC0=tc0.getTempC(); tempF0=tc0.getTempF(); intC0=tc0.getInternalC();
   tempC1=tc1.getTempC(); tempF1=tc1.getTempF(); intC1=tc1.getInternalC();    
 
-  // // Read the MAX chip
-  // if( !(tc_status=tc.read()) ){
-  //   // MAX chip read successful, so print temp values.
-  //   // Serial.print( (float)((int)tc_raw<<4),1);
+ 
+  #ifdef USE_SERIAL    
+  Serial.printf("[%iF / %iC] -- Raw: % 8lX Err: %1X InternalC: 0x%X|%i TempC: 0x%X|%i TempF: %i       \r",
+      tempF,tempC,        
+      tc.getRaw(),tc.getErr(), 
+      tc.getInternalC(), tc.getInternalC(),tc.getTempC(), tc.getTempC(), tc.getTempF() );
+  #endif
 
-  //   tempC0=tc0.getTempC(); tempF0=tc0.getTempF(); intC0=tc0.getInternalC();
-  //   tempC1=tc1.getTempC(); tempF1=tc1.getTempF(); intC1=tc1.getInternalC();    
-  //   #ifdef USE_SERIAL    
-  //   Serial.printf("[%iF / %iC] -- Raw: % 8lX Err: %1X InternalC: 0x%X|%i TempC: 0x%X|%i TempF: %i       \r",
-  //       tempF,tempC,        
-  //       tc.getRaw(),tc.getErr(), 
-  //       tc.getInternalC(), tc.getInternalC(),tc.getTempC(), tc.getTempC(), tc.getTempF() );
-  //   #endif
-  // } else {
-  //   #ifdef USE_SERIAL
-  //   // MAX chip read problem.  Print the error.
-  //   Serial.print("Error! "); Serial.print(tc_status,DEC);  Serial.flush();
-  //   #endif    
-  // }
-  // Serial.print(" ");
 
   #ifdef USE_LCD
   int8_t height=lcd.getMaxCharHeight();
@@ -109,9 +115,19 @@ void loop(void) {
   lcd.setCursor(0,row++*height); lcd.printf("Stat:     %1x |   %1x ", tc0.getErr(),tc1.getErr()  );      
   lcd.setCursor(0,64-height);    lcd.printf("IntT:   % 4X|% 4X  ", intC0, intC1 );    
   lcd.setCursor(0,64);           lcd.printf("RAW:%8X|% 8X", tc0.getRaw(), tc1.getRaw()  );      
+  lcd.setCursor(120,lcd.getMaxCharHeight()); lcd.printf("%1i",loopcount++);  lcd.sendBuffer();  
   lcd.sendBuffer();  
   #endif
 
+  if( pause ) {
+    lcd.setCursor(90,lcd.getMaxCharHeight()); lcd.printf("PAUSED");  lcd.sendBuffer();  
+    // while(!digitalRead(KILL_PIN)&1 );  //wait for release
+    delay(1);
+    while(digitalRead(KILL_PIN)&1 );  //wait for press
+    //continue on
+    lcd.setCursor(90,lcd.getMaxCharHeight()); lcd.printf("      ");  lcd.sendBuffer();  
+    pause = false;
+  }
 
-  delay(1000);
+  delay(250);
 }

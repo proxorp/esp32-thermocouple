@@ -49,10 +49,10 @@
 #define LCD_PINS_ENABLE LCD_PIN_DATA
 #define LCD_PINS_RS     LCD_PIN_RS
 
-#define pinTempClock   D4    //Which level shifter pin is the signal attached
+#define pinTempClock   D12    //Which level shifter pin is the signal attached
 #define pinTempData    D15
-#define pinTempCS0     D12
-#define pinTempCS1     D16
+#define pinTempCS0     D13
+#define pinTempCS1     D14
 
 #define LEDPIN LED_BUILTIN
 
